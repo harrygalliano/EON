@@ -9,7 +9,6 @@ export default function App() {
   );
 
   const [newReading, setNewReading] = useState<number>(0);
-  const [estimatedReading, setEstimatedReading] = useState<number>(0);
   const [isInvalid, setIsInvalid] = useState<boolean>(false)
 
   const readingListItems = readings.map((reading) => (
@@ -22,16 +21,25 @@ export default function App() {
     setNewReading(Number(event.target.value));
   };
 
-  const addReading = (newReading : number) => {
+  const addReading = (newReading : number, customerReadings : any) => {
     setIsInvalid(false)
     let preSubmitCustomer = [...readings]
     preSubmitCustomer.unshift({ value: newReading, source: "customer" });
-    setReadings(preSubmitCustomer) 
+    // I'm cocnfused by this bit of the task, because there is potential there are only 3 customer readings
+    // I'm working on the assumption that I shouldn't use estimated readings
+    // So I'm slightly tweaking the requirements to use the last 3 readings
+    const allCustomerReadings = preSubmitCustomer.filter((newReading) => newReading.source === "customer");
+    console.log(allCustomerReadings)
+    const one : number = allCustomerReadings[0].value - allCustomerReadings[1].value
+    const two : number = allCustomerReadings[1].value - allCustomerReadings[2].value
+    const avDif : number = Math.round((one + two) / 2)
+    console.log("this is the average dif", avDif)
+    const estimatedReading = preSubmitCustomer[0].value + avDif
+    console.log("here is the estimated value", estimatedReading)
+    preSubmitCustomer.unshift({ value: estimatedReading, source: "estimated" });
+    setReadings(preSubmitCustomer)
   }
 
-  const estimateReading = (customerReadings : any) => {
-
-  }
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
@@ -45,8 +53,7 @@ export default function App() {
       setIsInvalid(true)
     }
     else {
-      addReading(newReading)
-      estimateReading(customerReadings)
+      addReading(newReading, customerReadings)
     }
 
 
@@ -57,8 +64,8 @@ export default function App() {
       <h1>Meter Readings</h1>
       <p>Enter a new meter reading:</p>
       <form onSubmit={(event) => handleSubmit(event)}> 
-      <input data-testid="input" onChange={(event) => handleChange(event)} className="input"></input>
-      <button data-testid="button" >Submit</button>
+      <input type="number" data-testid="input" onChange={(event) => handleChange(event)} className="input"></input>
+      <button className="button" data-testid="button" >Submit</button>
       </form>
       <div>
         { isInvalid? 
