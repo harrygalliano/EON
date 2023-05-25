@@ -8,13 +8,22 @@ export default function App() {
     generateMeterReadings()
   );
 
+  const [newReading, setNewReading] = useState<number>(0);
+  const [estimatedReading, setEstimatedReading] = useState<number>(0);
+
   const readingListItems = readings.map((reading) => (
     <li key={reading.value}>
       {reading.value} - {reading.source}
     </li>
   ));
 
-  const handleSubmit = () => {
+  const invalidEntry :boolean = false
+
+  const handleChange = (event: any) => {
+    setNewReading(Number(event.target.value));
+  };
+
+  const handleSubmit = (event: any) => {
 
   }
 
@@ -22,9 +31,9 @@ export default function App() {
     <div className="App">
       <h1>Meter Readings</h1>
       <p>Enter a new meter reading:</p>
-      <form onSubmit={handleSubmit}> 
-      <input className="input"></input>
-      <button>Submit</button>
+      <form onSubmit={(event) => handleSubmit(event)}> 
+      <input data-testid="input" onChange={(event) => handleChange(event)} className="input"></input>
+      <button data-testid="button" >Submit</button>
       </form>
       <p className="error" style={{ display: "none" }}>
         This is an invalid meter reading.
@@ -36,3 +45,4 @@ export default function App() {
     </div>
   );
 }
+
